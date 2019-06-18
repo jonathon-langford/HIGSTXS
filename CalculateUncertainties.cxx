@@ -110,6 +110,33 @@ void CalculateUncertainties () {
   std::cout << std::endl;
   
   
+  for (int iBin=0; iBin<500; iBin++) {
+    
+    float integral_nominal = histo->GetBinContent (iBin+1);
+    
+    if (integral_nominal != 0) {
+      
+      std::cout << " [" << iBin << "] =>  ::: scale factor per bin        ";
+      
+      for (int i=0; i<9; i++) {
+        if (i==2 || i==6) continue;
+        
+        float integral_varied = histo_scale[i]->GetBinContent (iBin+1);
+        
+        std::cout << " " << integral_nominal/integral_varied << "  , ";
+      }
+      
+      std::cout << std::endl;
+      
+    }
+    
+  }
+  
+  std::cout << std::endl;
+  std::cout << std::endl;
+  std::cout << std::endl;
+  
+  
   
 //   # Gluon fusion
 //   'GG2H_FWDH' : 100,                             |   |eta_h| > 2.5
