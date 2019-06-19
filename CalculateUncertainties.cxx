@@ -137,6 +137,69 @@ void CalculateUncertainties () {
   std::cout << std::endl;
   
   
+  for (int iBin=0; iBin<500; iBin++) {
+    
+    float integral_nominal = histo->GetBinContent (iBin+1);
+    
+    if (integral_nominal != 0) {
+      
+      std::cout << " [" << iBin << "] =>  ::: ";
+      
+      for (int i=0; i<9; i++) {
+        if (i!=0 && i!=8) continue;
+        
+        float integral_varied = histo_scale[i]->GetBinContent (iBin+1);
+        
+        std::cout << " " << (integral_varied-integral_nominal)/integral_nominal*100. << " % , ";
+      }
+      
+      std::cout << std::endl;
+      
+    }
+    
+  }
+  
+  
+  
+  std::cout << std::endl;
+  std::cout << std::endl;
+  std::cout << std::endl;
+  
+  
+  for (int iBin=0; iBin<500; iBin++) {
+    
+    float integral_nominal = histo->GetBinContent (iBin+1);
+    
+    if (integral_nominal != 0) {
+      
+      std::cout << " [" << iBin << "] =>  ::: scale factor per bin        ";
+      
+      for (int i=0; i<9; i++) {
+        if (i!=0 && i!=8) continue;
+        
+        float integral_varied = histo_scale[i]->GetBinContent (iBin+1);
+        
+        std::cout << " " << integral_nominal/integral_varied << "  , ";
+      }
+      
+      std::cout << std::endl;
+      
+    }
+    
+  }
+  
+  std::cout << std::endl;
+  std::cout << std::endl;
+  std::cout << std::endl;
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
 //   # Gluon fusion
 //   'GG2H_FWDH' : 100,                             |   |eta_h| > 2.5
@@ -217,6 +280,9 @@ void CalculateUncertainties () {
 //   108, 109, 110, 111, 101, 102 --> >= 2 jets     ---> 2 index
 //   
   
+  std::cout << " ------------------------------- " << std::endl;
+  std::cout << " ---- after merging jt bins ---- " << std::endl;
+  std::cout << std::endl;
   
   for (int i=0; i<9; i++) {
   
@@ -312,7 +378,47 @@ void CalculateUncertainties () {
   std::cout << std::endl;
   std::cout << std::endl;
   
+  //
+  //---- just the maximum variation
+  //
   
+  for (int iBin=0; iBin<500; iBin++) {
+    float integral_nominal = histo->GetBinContent (iBin+1);
+    if (integral_nominal != 0) {
+      std::cout << " [" << iBin << "] =>  ::: " << integral_nominal << "     ";
+      for (int i=0; i<9; i++) {
+        if (i!=0 && i!=8) continue;
+        std::cout << " " << ( (integrals.at(i))[iBin] - (integrals.at(4))[iBin] ) / (integrals.at(4))[iBin] << " % , ";
+      }
+      std::cout << std::endl;
+    }
+  }
+  
+  
+  
+  
+  std::cout << std::endl;
+  std::cout << std::endl;
+  std::cout << std::endl;
+  
+  for (int iBin=0; iBin<500; iBin++) {
+    float integral_nominal = histo->GetBinContent (iBin+1);
+    if (integral_nominal != 0) {
+      std::cout << " [" << iBin << "] =>  ::: scale factor     ";
+      for (int i=0; i<9; i++) {
+        if (i!=0 && i!=8) continue;
+        std::cout << " " << (integrals.at(4))[iBin] / (integrals.at(i))[iBin] << "  , ";
+      }
+      std::cout << std::endl;
+    }
+  }
+  
+  
+  
+  
+  std::cout << std::endl;
+  std::cout << std::endl;
+  std::cout << std::endl;
   
   
   
