@@ -208,7 +208,7 @@ void CalculateNormalizations () {
   file_CrossSections << "  "  << std::left << std::setw(12) << "  UD ";
   file_CrossSections << "  "  << std::left << std::setw(12) << "  UN ";
   file_CrossSections << "  "  << std::left << std::setw(12) << "  UU ";
-  file_CrossSections << " (cross sections) " << std::endl;
+  file_CrossSections << " (cross sections, D = down = 0.5, N = nominal = 1.0, U = up = 2.0) " << std::endl;
   
   
   for (int iBin=0; iBin<500; iBin++) {
@@ -239,7 +239,7 @@ void CalculateNormalizations () {
   file_Normalization << "  "  << std::left << std::setw(12) << "  UD ";
   file_Normalization << "  "  << std::left << std::setw(12) << "  UN ";
   file_Normalization << "  "  << std::left << std::setw(12) << "  UU ";
-  file_Normalization << " (nominal / varied) " << std::endl;
+  file_Normalization << " (nominal / varied, D = down = 0.5, N = nominal = 1.0, U = up = 2.0) " << std::endl;
   
   
   for (int iBin=0; iBin<500; iBin++) {
