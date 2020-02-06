@@ -2,6 +2,8 @@ STXS support measurements
 ====
 
 Normalization uncertainties in STXS bins
+~~~
+
 
 Input:
 
@@ -63,6 +65,25 @@ Run:
     r99t CalculateUncertainties.cxx
 
 
+    
+
+Normalization in each STXS bin 
+~~~
+
+Provide the inputs needed by analyzers to rescale the weights in each STXS bin, or to perform a a-posteriori splitting of the nuisance
+
+Input:
+    
+    Already STXS added:
+    
+    /eos/cms/store/group/phys_higgs/cmshww/amassiro/NanoProd/GluGluHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/nanoAOD__Fall2017_nAOD_v2_94X__GluGluHToWWTo2L2NuPowheg_M125/190124_220256/0000/nanoAOD__Fall2017_nAOD_v2_94X__GluGluHToWWTo2L2NuPowheg_M125_1.root
+
+
+Run:
+
+    r99t CalculateNormalizations.cxx
+    
+    
 
 
 
