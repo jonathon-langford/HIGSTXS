@@ -152,7 +152,7 @@ void CalculateNormalizations () {
   //   
   
   
-  for (int iBin=0; iBin<500; iBin++) {
+  for (int iBin=0; iBin<max_number_of_STXS_bins; iBin++) {
     float integral_nominal = histo->GetBinContent (iBin+1);
     if (integral_nominal != 0) {
       for (int i=0; i<9; i++) {
@@ -211,7 +211,7 @@ void CalculateNormalizations () {
   file_CrossSections << " (cross sections, D = down = 0.5, N = nominal = 1.0, U = up = 2.0) " << std::endl;
   
   
-  for (int iBin=0; iBin<500; iBin++) {
+  for (int iBin=0; iBin<max_number_of_STXS_bins; iBin++) {
     float integral_nominal = histo->GetBinContent (iBin+1);
     if (integral_nominal != 0) {
       file_CrossSections << "  " << std::left << std::setw(12) << iBin ;
@@ -242,7 +242,7 @@ void CalculateNormalizations () {
   file_Normalization << " (nominal / varied, D = down = 0.5, N = nominal = 1.0, U = up = 2.0) " << std::endl;
   
   
-  for (int iBin=0; iBin<500; iBin++) {
+  for (int iBin=0; iBin<max_number_of_STXS_bins; iBin++) {
     float integral_nominal = histo->GetBinContent (iBin+1);
     if (integral_nominal != 0) {
       file_Normalization << "  " << std::left << std::setw(12) << iBin ;
@@ -269,6 +269,43 @@ void CalculateNormalizations () {
   //      [ 6 ] = 1007                                       <weight id="1007"> muR=0.50000E+00 muF=0.10000E+01 </weight>             DN
   //      [ 7 ] = 1008                                       <weight id="1008"> muR=0.50000E+00 muF=0.20000E+01 </weight>             DU   -> not used
   //      [ 8 ] = 1009                                       <weight id="1009"> muR=0.50000E+00 muF=0.50000E+00 </weight>             DD
+  
+  
+  
+  // improved plotting
+  
+  int number_of_STXS_bins = 0;
+  for (int iBin=0; iBin<max_number_of_STXS_bins; iBin++) {
+    float integral_nominal = histo->GetBinContent (iBin+1);
+    if (integral_nominal != 0) {
+      number_of_STXS_bins++;
+    }
+  }
+  
+  TH1F* histo_nice = new TH1F ("histo_nice", "", number_of_STXS_bins, 0, number_of_STXS_bins);
+  
+  TH1F* histo_nice_scale[9];
+  
+  for (int i=0; i<9; i++) {
+    
+    TString name = Form ("histo_nice_%d", i);
+    histo_nice_scale[i] = new TH1F (name.Data(), "", number_of_STXS_bins, 0, number_of_STXS_bins);
+
+    number_of_STXS_bins = 0;
+    for (int iBin=0; iBin<max_number_of_STXS_bins; iBin++) {
+      float integral_nominal = histo->GetBinContent (iBin+1);
+      if (integral_nominal != 0) {
+        number_of_STXS_bins++;
+        histo_nice_scale[i] -> SetBinContent (number_of_STXS_bins,  integral_nominal / (integrals.at(i))[iBin]);
+      }
+    }
+    
+  }
+  
+  
+  
+  
+  
   
   
 }
