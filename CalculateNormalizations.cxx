@@ -1,6 +1,44 @@
 
+#include "tdrstyle.C"
+#include <stdlib.h>
+
+
+void setupHisto(TH1F* histo, int icolor) {
+  
+  Color_t* color = new Color_t [200];
+  color[0] = kRed ;
+  color[1] = kAzure + 10 ;
+  color[2] = kYellow + 2 ;
+  color[3] = kGreen ;
+  color[4] = kGreen + 4 ;
+  color[5] = kBlue ;
+  color[6] = kCyan ;
+  color[7] = kPink + 1 ;
+  color[8] = kBlack ;
+  color[9] = kYellow + 4 ;
+  for (int i=0; i<30; i++) {
+    color[i+10] = kBlue + i;
+  }
+  
+  
+  
+  histo->SetLineWidth(2);
+  histo->SetLineColor(color[icolor]);
+  histo->SetMarkerColor(color[icolor]);
+  histo->SetMarkerSize(1);
+  histo->SetMarkerStyle(20+icolor);
+}
+
+
+
+
+
 
 void CalculateNormalizations () {
+  
+  gStyle->SetOptStat(0);
+  setTDRStyle();
+  
   
   TFile *file = TFile::Open("nanoAOD__Fall2017_nAOD_v2_94X__GluGluHToWWTo2L2NuPowheg_M125_1.root");
   TTree* Events = (TTree*) file->Get("Events");
@@ -281,9 +319,7 @@ void CalculateNormalizations () {
       number_of_STXS_bins++;
     }
   }
-  
-  TH1F* histo_nice = new TH1F ("histo_nice", "", number_of_STXS_bins, 0, number_of_STXS_bins);
-  
+    
   TH1F* histo_nice_scale[9];
   
   for (int i=0; i<9; i++) {
@@ -303,6 +339,144 @@ void CalculateNormalizations () {
   }
   
   
+  
+  TCanvas* cc_nice = new TCanvas ("cc_nice" , "", 900,600);
+  cc_nice->SetRightMargin(0.2);
+  
+  
+  TLegend* legend_nice = new TLegend(0.81,0.25,0.99,0.90);
+
+  for (int i=0; i<9; i++) {
+    setupHisto( histo_nice_scale[i], i);
+    if (i==0) {
+      histo_nice_scale[i] -> Draw();
+      histo_nice_scale[i] -> GetYaxis() -> SetRangeUser(0.5, 1.5);
+      histo_nice_scale[i] -> GetYaxis() -> SetTitle("#sigma varied / #sigma nominal");
+    }
+    else      histo_nice_scale[i] -> Draw("same");
+  }
+  
+  
+  number_of_STXS_bins = 0;
+  for (int iBin=0; iBin<max_number_of_STXS_bins; iBin++) {
+    float integral_nominal = histo->GetBinContent (iBin+1);
+    if (integral_nominal != 0) {
+      number_of_STXS_bins++;
+      histo_nice_scale[0]->GetXaxis()->SetBinLabel(number_of_STXS_bins, (std::to_string(iBin)).c_str() );
+    }  
+  }
+  
+  
+  //   # Gluon fusion
+  //   'GG2H_FWDH' : 100,                             |   |eta_h| > 2.5
+  //   'GG2H_VBFTOPO_JET3VETO' : 101,                 |    2 jet
+  //   'GG2H_VBFTOPO_JET3' : 102,                     |    3 jet
+  //   'GG2H_0J'   : 103,                             |    0 jet
+  //   'GG2H_1J_PTH_0_60' : 104,                      |    1 jet
+  //   'GG2H_1J_PTH_60_120' : 105,                    |    1 jet
+  //   'GG2H_1J_PTH_120_200' : 106,                   |    1 jet
+  //   'GG2H_1J_PTH_GT200' : 107,                     |    1 jet
+  //   'GG2H_GE2J_PTH_0_60' : 108,                    |    2 jet
+  //   'GG2H_GE2J_PTH_60_120' : 109,                  |    2 jet
+  //   'GG2H_GE2J_PTH_120_200' : 110,                 |    2 jet
+  //   'GG2H_GE2J_PTH_GT200' : 111,                   |    2 jet
+  //   
+  
+  
+  
+  legend_nice->AddEntry(histo_nice_scale[0],"#mu_{r} = 0.5, #mu_{f} = 0.5","f");
+  legend_nice->AddEntry(histo_nice_scale[1],"#mu_{r} = 0.5, #mu_{f} = 1.0","f");
+  legend_nice->AddEntry(histo_nice_scale[2],"#mu_{r} = 0.5, #mu_{f} = 2.0","f");
+  legend_nice->AddEntry(histo_nice_scale[3],"#mu_{r} = 1.0, #mu_{f} = 0.5","f");
+  legend_nice->AddEntry(histo_nice_scale[4],"#mu_{r} = 1.0, #mu_{f} = 1.0","f");
+  legend_nice->AddEntry(histo_nice_scale[5],"#mu_{r} = 1.0, #mu_{f} = 2.0","f");
+  legend_nice->AddEntry(histo_nice_scale[6],"#mu_{r} = 2.0, #mu_{f} = 0.5","f");
+  legend_nice->AddEntry(histo_nice_scale[7],"#mu_{r} = 2.0, #mu_{f} = 1.0","f");
+  legend_nice->AddEntry(histo_nice_scale[8],"#mu_{r} = 2.0, #mu_{f} = 2.0","f");
+  legend_nice->Draw();
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  TH1F* histo_useful_scale[9];
+  
+  for (int i=0; i<9; i++) {
+    
+    TString name = Form ("histo_useful_%d", i);
+    histo_useful_scale[i] = new TH1F (name.Data(), "", number_of_STXS_bins, 0, number_of_STXS_bins);
+    
+    number_of_STXS_bins = 0;
+    for (int iBin=0; iBin<max_number_of_STXS_bins; iBin++) {
+      float integral_nominal = histo->GetBinContent (iBin+1);
+      if (integral_nominal != 0) {
+        number_of_STXS_bins++;
+        histo_useful_scale[i] -> SetBinContent (number_of_STXS_bins,  integral_nominal / (integrals.at(i))[iBin]);
+      }
+    }
+    
+  }
+  
+  TCanvas* cc_useful = new TCanvas ("cc_useful" , "", 900,600);
+  cc_useful->SetRightMargin(0.2);
+  
+  
+  TLegend* legend_useful = new TLegend(0.81,0.25,0.99,0.90);
+  
+  for (int i=0; i<9; i++) {
+    setupHisto( histo_useful_scale[i], i);
+    if (i==2 || i==6) continue;
+    if (i==0) {
+      histo_useful_scale[i] -> Draw();
+      histo_useful_scale[i] -> GetYaxis() -> SetRangeUser(0.5, 1.5);
+      histo_useful_scale[i] -> GetYaxis() -> SetTitle("#sigma varied / #sigma nominal");
+    }
+    else      histo_useful_scale[i] -> Draw("same");
+  }
+  
+  
+  number_of_STXS_bins = 0;
+  for (int iBin=0; iBin<max_number_of_STXS_bins; iBin++) {
+    float integral_nominal = histo->GetBinContent (iBin+1);
+    if (integral_nominal != 0) {
+      number_of_STXS_bins++;
+      histo_useful_scale[0]->GetXaxis()->SetBinLabel(number_of_STXS_bins, (std::to_string(iBin)).c_str() );
+    }  
+  }
+  
+  
+  //   # Gluon fusion
+  //   'GG2H_FWDH' : 100,                             |   |eta_h| > 2.5
+  //   'GG2H_VBFTOPO_JET3VETO' : 101,                 |    2 jet
+  //   'GG2H_VBFTOPO_JET3' : 102,                     |    3 jet
+  //   'GG2H_0J'   : 103,                             |    0 jet
+  //   'GG2H_1J_PTH_0_60' : 104,                      |    1 jet
+  //   'GG2H_1J_PTH_60_120' : 105,                    |    1 jet
+  //   'GG2H_1J_PTH_120_200' : 106,                   |    1 jet
+  //   'GG2H_1J_PTH_GT200' : 107,                     |    1 jet
+  //   'GG2H_GE2J_PTH_0_60' : 108,                    |    2 jet
+  //   'GG2H_GE2J_PTH_60_120' : 109,                  |    2 jet
+  //   'GG2H_GE2J_PTH_120_200' : 110,                 |    2 jet
+  //   'GG2H_GE2J_PTH_GT200' : 111,                   |    2 jet
+  //   
+  
+  
+  
+  legend_useful->AddEntry(histo_useful_scale[0],"#mu_{r} = 0.5, #mu_{f} = 0.5","f");
+  legend_useful->AddEntry(histo_useful_scale[1],"#mu_{r} = 0.5, #mu_{f} = 1.0","f");
+//   legend_useful->AddEntry(histo_useful_scale[2],"#mu_{r} = 0.5, #mu_{f} = 2.0","f");
+  legend_useful->AddEntry(histo_useful_scale[3],"#mu_{r} = 1.0, #mu_{f} = 0.5","f");
+  legend_useful->AddEntry(histo_useful_scale[4],"#mu_{r} = 1.0, #mu_{f} = 1.0","f");
+  legend_useful->AddEntry(histo_useful_scale[5],"#mu_{r} = 1.0, #mu_{f} = 2.0","f");
+//   legend_useful->AddEntry(histo_useful_scale[6],"#mu_{r} = 2.0, #mu_{f} = 0.5","f");
+  legend_useful->AddEntry(histo_useful_scale[7],"#mu_{r} = 2.0, #mu_{f} = 1.0","f");
+  legend_useful->AddEntry(histo_useful_scale[8],"#mu_{r} = 2.0, #mu_{f} = 2.0","f");
+  legend_useful->Draw();
   
   
   
