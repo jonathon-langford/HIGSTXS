@@ -3,6 +3,9 @@
 #include <stdlib.h>
 
 
+#include "weight2MINLO.cc"
+
+
 void setupHisto(TH1F* histo, int icolor) {
   
   Color_t* color = new Color_t [200];
@@ -39,6 +42,10 @@ void CalculateNormalizations (std::string input_file_root = "nanoAOD__Fall2017_n
   gStyle->SetOptStat(0);
   setTDRStyle();
   
+  //---- defined in weight2MINLO.cc
+  initialize_weight2MINLO();
+  
+  
   
   TFile *file = TFile::Open(input_file_root.c_str());
   TTree* Events = (TTree*) file->Get("Events");
@@ -50,7 +57,15 @@ void CalculateNormalizations (std::string input_file_root = "nanoAOD__Fall2017_n
   TH1F* histo_scale[9];
   
   
-  Events->Draw("HTXS_stage_1_pTjet30 >> histo", "1");
+//   Events->Draw("HTXS_stage_1_pTjet30 >> histo", "1");
+  
+//   ... including powheg to minlo reweighting
+  
+  
+  Events->Draw("HTXS_stage_1_pTjet30 >> histo", "weight2MINLO(HTXS_Higgs_pt,HTXS_njets30)");
+  
+  
+  
     
 //   LHEWeight_originalXWGTUP
 //   LHEScaleWeight  [9]          (and then LHEPdfWeight)  [103]
@@ -346,9 +361,12 @@ void CalculateNormalizations (std::string input_file_root = "nanoAOD__Fall2017_n
   
   
   TLegend* legend_nice = new TLegend(0.81,0.25,0.99,0.90);
-
+  
   for (int i=0; i<9; i++) {
     setupHisto( histo_nice_scale[i], i);
+    if (i==0 || i==8) {
+      histo_nice_scale[i]->SetLineWidth(2.0);
+    }
     if (i==0) {
       histo_nice_scale[i] -> Draw();
       histo_nice_scale[i] -> GetYaxis() -> SetRangeUser(0.5, 1.5);
@@ -431,6 +449,9 @@ void CalculateNormalizations (std::string input_file_root = "nanoAOD__Fall2017_n
   
   for (int i=0; i<9; i++) {
     setupHisto( histo_useful_scale[i], i);
+    if (i==0 || i==8) {
+      histo_useful_scale[i]->SetLineWidth(2.0);
+    }
     if (i==2 || i==6) continue;
     if (i==0) {
       histo_useful_scale[i] -> Draw();

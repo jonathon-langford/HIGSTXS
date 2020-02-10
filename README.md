@@ -90,10 +90,18 @@ Official production:
     
     
     
+    /store/group/phys_higgs/cmshww/amassiro/NanoProd/GluGluHToWWTo2L2Nu_M125_13TeV_powheg_minloHJ_NNLOPS_JHUGenV702_pythia8/nanoAOD__Summer16_102X_nAODv5_Full2016v6_NNLOPS__GluGluHToWWTo2L2NuPowhegNNLOPS_M125_private/200115_155222/0000/
     
-     /GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8/RunIISummer16NanoAODv6-PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/NANOAODSIM
-     /store/mc/RunIISummer16NanoAODv6/GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8/NANOAODSIM/PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/280000/C832E8FC-6BE7-FA44-88F8-22F7BE1833E3.root
-     xrdcp  root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv6/GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8/NANOAODSIM/PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/280000/C832E8FC-6BE7-FA44-88F8-22F7BE1833E3.root   /tmp/amassiro/  
+    data/nanoAOD__Summer16_102X_nAODv5_Full2016v6_NNLOPS__GluGluHToWWTo2L2NuPowhegNNLOPS_M125_private_1.root
+    data/nanoAOD__Summer16_102X_nAODv5_Full2016v6_NNLOPS__GluGluHToWWTo2L2NuPowhegNNLOPS_M125_private_2.root
+    
+    
+    
+    
+    
+    /GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8/RunIISummer16NanoAODv6-PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/NANOAODSIM
+    /store/mc/RunIISummer16NanoAODv6/GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8/NANOAODSIM/PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/280000/C832E8FC-6BE7-FA44-88F8-22F7BE1833E3.root
+    xrdcp  root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv6/GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8/NANOAODSIM/PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/280000/C832E8FC-6BE7-FA44-88F8-22F7BE1833E3.root   /tmp/amassiro/  
     
     data/nano_HJNNLOPS_HZZ.root
 
@@ -108,8 +116,17 @@ Run:
     r99t CalculateNormalizations.cxx
     r99t CalculateNormalizations.cxx\(\"data/nano_HJNNLOPS_HZZ.root\"\)
     
+    r99t CalculateNormalizations.cxx\(\"data/nanoAOD__Summer16_102X_nAODv5_Full2016v6_NNLOPS__GluGluHToWWTo2L2NuPowhegNNLOPS_M125_private_1.root\"\)
     
 
+    
+    
+Check X to MINLO reweighting
+~~~
+
+    r99t CheckReweight.cxx
+    
+    
 
 
     
