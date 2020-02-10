@@ -34,13 +34,13 @@ void setupHisto(TH1F* histo, int icolor) {
 
 
 
-void CalculateNormalizations () {
+void CalculateNormalizations (std::string input_file_root = "nanoAOD__Fall2017_nAOD_v2_94X__GluGluHToWWTo2L2NuPowheg_M125_1.root") {
   
   gStyle->SetOptStat(0);
   setTDRStyle();
   
   
-  TFile *file = TFile::Open("nanoAOD__Fall2017_nAOD_v2_94X__GluGluHToWWTo2L2NuPowheg_M125_1.root");
+  TFile *file = TFile::Open(input_file_root.c_str());
   TTree* Events = (TTree*) file->Get("Events");
   
   int max_number_of_STXS_bins = 500;
@@ -105,6 +105,7 @@ void CalculateNormalizations () {
   std::cout << std::endl;
   std::cout << std::endl;
   
+  std::cout << " Normalized " << std::endl;
   
   //---- normalized
   

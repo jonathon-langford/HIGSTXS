@@ -78,10 +78,21 @@ Input:
     
     /eos/cms/store/group/phys_higgs/cmshww/amassiro/NanoProd/GluGluHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/nanoAOD__Fall2017_nAOD_v2_94X__GluGluHToWWTo2L2NuPowheg_M125/190124_220256/0000/nanoAOD__Fall2017_nAOD_v2_94X__GluGluHToWWTo2L2NuPowheg_M125_1.root
 
+Official production:
+
+    /store/mc/RunIISummer16NanoAODv6/GluGluHToWWTo2L2Nu_M125_13TeV_powheg_minloHJ_NNLOPS_JHUGenV702_pythia8/NANOAODSIM/PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/100000/1DBC2A44-BB36-2B4D-B4F9-16C95A4197F3.root
+    xrdcp  root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv6/GluGluHToWWTo2L2Nu_M125_13TeV_powheg_minloHJ_NNLOPS_JHUGenV702_pythia8/NANOAODSIM/PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/100000/1DBC2A44-BB36-2B4D-B4F9-16C95A4197F3.root   /tmp/amassiro/  
+    
+    nano_HJNNLOPS.root
+    
+    --> stxs 700/201 -> bbh??  https://gitlab.cern.ch/LHCHIGGSXS/LHCHXSWG2/STXS/Classification/blob/master/HiggsTemplateCrossSections.h
+    
+    
 
 Run:
 
     r99t CalculateNormalizations.cxx
+    r99t CalculateNormalizations.cxx\(\"nano_HJNNLOPS.root\"\)
     
     
 
