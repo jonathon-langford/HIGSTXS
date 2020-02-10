@@ -85,14 +85,28 @@ Official production:
     
     nano_HJNNLOPS.root
     
+    Events->Draw("HTXS_stage_1_pTjet30")
     --> stxs 700/201 -> bbh??  https://gitlab.cern.ch/LHCHIGGSXS/LHCHXSWG2/STXS/Classification/blob/master/HiggsTemplateCrossSections.h
     
+    
+    
+    
+     /GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8/RunIISummer16NanoAODv6-PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/NANOAODSIM
+     /store/mc/RunIISummer16NanoAODv6/GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8/NANOAODSIM/PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/280000/C832E8FC-6BE7-FA44-88F8-22F7BE1833E3.root
+     xrdcp  root://cmsxrootd.fnal.gov//store/mc/RunIISummer16NanoAODv6/GluGluHToZZTo4L_M125_13TeV_powheg2_minloHJ_NNLOPS_JHUgenV702_pythia8/NANOAODSIM/PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7-v1/280000/C832E8FC-6BE7-FA44-88F8-22F7BE1833E3.root   /tmp/amassiro/  
+    
+    data/nano_HJNNLOPS_HZZ.root
+
+    Events->Draw("HTXS_stage_1_pTjet30")
+    --> stxs 700/201 -> bbh??  https://gitlab.cern.ch/LHCHIGGSXS/LHCHXSWG2/STXS/Classification/blob/master/HiggsTemplateCrossSections.h
+     
+     
     
 
 Run:
 
     r99t CalculateNormalizations.cxx
-    r99t CalculateNormalizations.cxx\(\"nano_HJNNLOPS.root\"\)
+    r99t CalculateNormalizations.cxx\(\"data/nano_HJNNLOPS_HZZ.root\"\)
     
     
 
