@@ -53,7 +53,8 @@ void setupTGraph(TGraph* graph, int icolor) {
   
   
   
-  graph->SetLineWidth(2);
+  graph->SetLineWidth(3);
+  graph->SetLineStyle(2);
   graph->SetLineColor(color[icolor]);
   graph->SetMarkerColor(color[icolor]);
   graph->SetMarkerSize(1);
@@ -105,6 +106,7 @@ void CheckReweight (std::string input_file_root = "nanoAOD__Fall2017_nAOD_v2_94X
  
     if (iJet==0){
       histo[iJet]->DrawNormalized();
+      histo[iJet]->GetXaxis()->SetTitle("Higgs p_{T}");
     }
     else {
       histo[iJet]->DrawNormalized("same");      
@@ -123,16 +125,36 @@ void CheckReweight (std::string input_file_root = "nanoAOD__Fall2017_nAOD_v2_94X
     if (iJet==3){ 
       _weightSources[iJet]->Draw("APL");
       _weightSources[iJet]->GetXaxis()->SetRangeUser(0,1000);
+      _weightSources[iJet]->GetXaxis()->SetTitle("Higgs p_{T}");
     }
     else {
       _weightSources[iJet]->Draw("PL");
     }
     
   }
-    
-    
-    
   
+  
+  
+  
+  
+  TCanvas* cc_separate = new TCanvas ("cc_separate" , "", 900,600);
+  cc_separate->Divide(2,2);
+  
+  for (int iJet=0; iJet<4; iJet++) {
+    cc_separate-> cd( iJet+1 );
+    
+    float integral = histo[iJet]->Integral();
+    histo[iJet]->Scale(10./ integral);
+    
+    histo[iJet]->Draw("histo");
+    histo[iJet]->GetXaxis()->SetTitle("Higgs p_{T}");
+    histo[iJet]->GetYaxis()->SetRangeUser(0.0, 3.0);
+    
+    _weightSources[iJet]->Draw("PL");
+    
+  }
+
+
   
   
   
