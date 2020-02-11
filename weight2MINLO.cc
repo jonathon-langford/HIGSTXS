@@ -21,7 +21,7 @@ void initialize_weight2MINLO (){
 
 float weight2MINLO(float HTXS_Higgs_pt, int HTXS_njets30){
   
-//   return 1.0;
+  return 1.0;
     
   switch (HTXS_njets30) {
     case 0:
