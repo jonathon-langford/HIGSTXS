@@ -70,7 +70,10 @@ Run:
 Normalization in each STXS bin 
 ~~~
 
-Provide the inputs needed by analyzers to rescale the weights in each STXS bin, or to perform a a-posteriori splitting of the nuisance
+Provide the inputs needed by analyzers to rescale the weights in each STXS bin, or to perform a a-posteriori splitting of the nuisance.
+See the slides for the explanation of the method.
+
+Current baseline is powheg re-weightted to minlo.
 
 Input:
     
@@ -123,6 +126,9 @@ Run:
     
 Check X to MINLO reweighting
 ~~~
+
+Check the pt distribution of the Higgs and the reweighting from powheg to MINLO currently used.
+
 
     r99t CheckReweight.cxx
     
