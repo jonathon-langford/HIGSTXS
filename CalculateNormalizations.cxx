@@ -57,12 +57,11 @@ void CalculateNormalizations (std::string input_file_root = "nanoAOD__Fall2017_n
   TH1F* histo_scale[9];
   
   
-//   Events->Draw("HTXS_stage_1_pTjet30 >> histo", "1");
+  Events->Draw("HTXS_stage_1_pTjet30 >> histo", "1");
   
 //   ... including powheg to minlo reweighting
   
-  
-  Events->Draw("HTXS_stage_1_pTjet30 >> histo", "weight2MINLO(HTXS_Higgs_pt,HTXS_njets30)");
+//   Events->Draw("HTXS_stage_1_pTjet30 >> histo", "weight2MINLO(HTXS_Higgs_pt,HTXS_njets30)");
   
   
   
@@ -82,7 +81,12 @@ void CalculateNormalizations (std::string input_file_root = "nanoAOD__Fall2017_n
     TString weight = Form ("LHEScaleWeight[%d]", i);
     TString whattodraw = Form ("HTXS_stage_1_pTjet30 >> %s", name.Data());
     
+    //   ... including powheg to minlo reweighting
+//     TString weight = Form ("LHEScaleWeight[%d]*weight2MINLO(HTXS_Higgs_pt,HTXS_njets30)", i);
+    
     Events->Draw(whattodraw.Data(), weight.Data());
+  
+    
     
   }
   
@@ -370,7 +374,7 @@ void CalculateNormalizations (std::string input_file_root = "nanoAOD__Fall2017_n
     if (i==0) {
       histo_nice_scale[i] -> Draw();
       histo_nice_scale[i] -> GetYaxis() -> SetRangeUser(0.5, 1.5);
-      histo_nice_scale[i] -> GetYaxis() -> SetTitle("#sigma varied / #sigma nominal");
+      histo_nice_scale[i] -> GetYaxis() -> SetTitle("#sigma nominal / #sigma varied");
     }
     else      histo_nice_scale[i] -> Draw("same");
   }
@@ -456,7 +460,7 @@ void CalculateNormalizations (std::string input_file_root = "nanoAOD__Fall2017_n
     if (i==0) {
       histo_useful_scale[i] -> Draw();
       histo_useful_scale[i] -> GetYaxis() -> SetRangeUser(0.5, 1.5);
-      histo_useful_scale[i] -> GetYaxis() -> SetTitle("#sigma varied / #sigma nominal");
+      histo_useful_scale[i] -> GetYaxis() -> SetTitle("#sigma nominal / #sigma varied");
     }
     else      histo_useful_scale[i] -> Draw("same");
   }

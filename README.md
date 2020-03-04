@@ -117,6 +117,9 @@ Official production:
 Run:
 
     r99t CalculateNormalizations.cxx
+    
+    r99t CalculateNormalizations.cxx\(\"nanoAOD__Fall2017_nAOD_v2_94X__GluGluHToWWTo2L2NuPowheg_M125_1.root\"\)
+    
     r99t CalculateNormalizations.cxx\(\"data/nano_HJNNLOPS_HZZ.root\"\)
     
     r99t CalculateNormalizations.cxx\(\"data/nanoAOD__Summer16_102X_nAODv5_Full2016v6_NNLOPS__GluGluHToWWTo2L2NuPowhegNNLOPS_M125_private_1.root\"\)
