@@ -1,45 +1,120 @@
 typedef std::vector<double> NumV;
+
 //
 // The input kinematics should be based on the truth quantites of
 // defined according to:
-// https://svnweb.cern.ch/cern/wsvn/lhchiggsxs/repository/TemplateXS/HiggsTemplateCrossSections.h
+// https://gitlab.cern.ch/LHCHIGGSXS/LHCHXSWG2/STXS/Classification/-/blob/master/HiggsTemplateCrossSections.h
 // namely Higgs boson pT (in GeV!), jet multiplicity with 30 GeV pT threshold
-// of jets built ignoring all stable particles originating from the Higgs boson decay
-// and the Stage1 STXS category
-// In the code above, these quanties are part of the HiggsClassification struct and called:
-//   higgs.Pt(), jets30.size(), stage1_cat_pTjet30GeV
+// invariant mass of jets, ...
+// namely the Stage 1.2 STXS categories
 //
-// Note: the stage 1 STXS index is only used to determine if the current event fulfil the
-//       VBF topology selection. I.e. only categories
-//         GG2H_VBFTOPO_JET3VETO = 101, GG2H_VBFTOPO_JET3 = 102,
-//       are checked
+// This is the uncertainty scheme for the interpretation of the STXS measurement
+// Stage 1.2
 //
-// Dag Gillberg, March 21, 2017
+// Details in LHCHXSWG-2020-001
+//
+//
+// Aug 12th, 2020
+// Andrea Massironi (ggF lhchxswg CMS)
+//
 
 //
-// Fractional uncertainty amplitudes of the "WG1 scheme", the "STXS scheme" and the merged "2017 scheme"
-// The six first numbers are the same from each method below, namely the uncertainty amplitude of the jet bins:
-// mu, res, mig01, mig12, vbf2j, vbf3j
-// The last numbers are pT dependent uncertainies
-NumV qcd_ggF_uncert_wg1(int Njets30, double pTH, int STXS);  // 7 nuisances, 5 x jetbin, pTH, qm_t
-NumV qcd_ggF_uncert_stxs(int Njets30, double pTH, int STXS); // 8 nuisances, 5 x jetbin, D60, D120, D200
-NumV qcd_ggF_uncert_2017(int Njets30, double pTH, int STXS); // 8 nuisances, 5 x jetbin, pT60, pT120, qm_t
-NumV qcd_ggF_uncert_jve(int Njets30, double pTH, int STXS);  // 7 nuisances, 4 x jetbin, pT60, pT120, qm_t
+// NB: the only input from YR4 and higher order calculation is about jet binning
+//     All the rest is coming from scale variations
+//
+//
+
 
 //
-// Scale factors defined as "1+uncert", where uncert is the fractional uncertainty amplitude
-// This can be treated as an event weight to propagate the uncertainty to any observable/distribution.
-NumV qcd_ggF_uncertSF_wg1(int Njets30, double pTH, int STXS_Stage1, double Nsigma=1.0);
-NumV qcd_ggF_uncertSF_stxs(int Njets30, double pTH, int STXS_Stage1, double Nsigma=1.0);
-NumV qcd_ggF_uncertSF_2017(int Njets30, double pTH, int STXS_Stage1, double Nsigma=1.0);
-NumV qcd_ggF_uncertSF_jve(int Njets30, double pTH, int STXS_Stage1, double Nsigma=1.0);
+// Stage 1.2 :     17 bins
+//
+//
+// Gluon fusion
+//      GG2H_FWDH = 100,
+//      GG2H_PTH_200_300 = 101,
+//      GG2H_PTH_300_450 = 102,
+//      GG2H_PTH_450_650 = 103,
+//      GG2H_PTH_GT650 = 104,
+//      GG2H_0J_PTH_0_10   = 105,
+//      GG2H_0J_PTH_GT10   = 106,
+//      GG2H_1J_PTH_0_60 = 107,
+//      GG2H_1J_PTH_60_120 = 108,
+//      GG2H_1J_PTH_120_200 = 109,
+//      GG2H_GE2J_MJJ_0_350_PTH_0_60 = 110,
+//      GG2H_GE2J_MJJ_0_350_PTH_60_120 = 111,
+//      GG2H_GE2J_MJJ_0_350_PTH_120_200 = 112,
+//      GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_0_25 = 113,
+//      GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_GT25 = 114,
+//      GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_0_25 = 115,
+//      GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_GT25 = 116,
+//
 
+//
+// Edges:
+// Njets :    0/1   1/2   yield   res                    --->   4 nuisances
+// ptH inclusive:                     200, 300, 450, 650 --->   4 nuisances
+// pth 0 jet:                         10                 --->   1 nuisance
+// pth 1 jet:                         60, 120            --->   2 nuisances
+// pth 2 jet (mjj < 350) :            60, 120            --->   2 nuisances
+// pthhjj 2 jet (350 < mjj < 700) :   25                 --->   1 nuisance (similar to 3rd jet veto)
+// pthhjj 2 jet (mjj > 700)       :   25                 --->   1 nuisance (similar to 3rd jet veto) 
+// mjj :      350    700                                 --->   2 nuisances
+//
+
+
+//
 // Cross sections of ggF with =0, =1, and >=2 jets
 // Obtained from Powheg NNLOPS. Scaled to sigma(N3LO) @125.09 = 48.52 pb
 // set as global variables (sorry!) since used both by BLPTW and JVE
+//
+// NB: to be updated ??? FIXME
+//
 static double g_sig0=30.117, g_sig1=12.928, g_sig_ge2=5.475,
 g_sig_ge1 = g_sig1+g_sig_ge2, g_sig_tot=g_sig0+g_sig_ge1, g_sig_vbfTopo = 0.630,
 g_sig_ge2noVBF=g_sig_ge2-g_sig_vbfTopo, g_sig_ge1noVBF=g_sig_ge1-g_sig_vbfTopo;
+
+
+
+
+NumV qcd_ggF_uncert_stage_1p2(int STXS) { // 17 nuisances
+
+  // Njets :    0/1   1/2   yield   res                    --->   4 nuisances
+  // ptH inclusive:                     200, 300, 450, 650 --->   4 nuisances
+  // pth 0 jet:                         10                 --->   1 nuisance
+  // pth 1 jet:                         60, 120            --->   2 nuisances
+  // pth 2 jet (mjj < 350) :            60, 120            --->   2 nuisances
+  // pthhjj 2 jet (350 < mjj < 700) :   25                 --->   1 nuisance (similar to 3rd jet veto)
+  // pthhjj 2 jet (mjj > 700)       :   25                 --->   1 nuisance (similar to 3rd jet veto) 
+  // mjj :      350    700                                 --->   2 nuisances
+  
+  NumV result = jetBinUnc(STXS);
+  result.push_back (ptInclusive(STXS));
+  result.push_back (pt0j(STXS));
+  result.push_back (pt1j(STXS));
+  result.push_back (pt2j(STXS));
+  result.push_back (pthjjlowmjj(STXS));
+  result.push_back (pthjjhighmjj(STXS));
+  result.push_back (mjj(STXS));
+  
+  return result;
+  
+}
+
+
+NumV jetBinUnc(int STXS) {
+  int Njets30;
+  
+  if (STXS == 105 || STXS == 106)                Njets30 = 0;
+  if (STXS == 107 || STXS == 108 || STXS == 109) Njets30 = 1;
+  if (STXS >= 110 && STXS <= 116)                Njets30 = 2;
+  
+  NumV result = blptw(Njets30);
+  
+  // set jet bin uncertainties to zero if we are in the VBF phase-space  ----> why???? FIXME
+//   if (result.back()!=0.0) result[0]=result[1]=result[2]=result[3]=0.0;
+  return result;
+}
+
 
 //
 // Jet bin uncertainties 
@@ -58,38 +133,35 @@ NumV blptw(int Njets30) {
   int jetBin = (Njets30 > 1 ? 2 : Njets30);
   double normFact = sf/sig[jetBin];
   
-  return { yieldUnc[jetBin]*normFact, resUnc[jetBin]*normFact,
-    cut01Unc[jetBin]*normFact, cut12Unc[jetBin]*normFact };
+  return {
+    yieldUnc[jetBin]*normFact, 
+    resUnc[jetBin]*normFact,
+    cut01Unc[jetBin]*normFact,
+    cut12Unc[jetBin]*normFact 
+  };
 }
 
-double vbf_2j(int STXS) {
-  if (STXS==101 || STXS == 102) return 0.200; // 20.0%
-  return 0.0; // Events with no VBF topology have no VBF uncertainty
+
+NumV ptInclusive(int STXS) {
+  // ptH inclusive:                     200, 300, 450, 650 --->   4 nuisances
+  
+  // < 200 GeV
+  if (STXS >= 105 && STXS <= 116) return {1.00, 1.00, 1.00, 1.00};
+  // > 200 GeV
+  if (STXS >= 101 && STXS <= 104) {
+    if (STXS == 101)  return {1.00, 1.00, 1.00, 1.00};
+    if (STXS == 102)  return {1.00, 1.00, 1.00, 1.00};
+    if (STXS == 103)  return {1.00, 1.00, 1.00, 1.00};
+    if (STXS == 104)  return {1.00, 1.00, 1.00, 1.00};
+  }
+  
 }
 
-double vbf_3j(int STXS) {
-  if (STXS==101) return -0.320; // GG2H_VBFTOPO_JET3VETO, tot unc 38%
-  if (STXS==102) return  0.235; // GG2H_VBFTOPO_JET3, tot unc 30.4%
-  return 0.0; // Events with no VBF topology have no VBF uncertainty
-}
 
-double interpol(double x, double x1, double y1, double x2, double y2) {
-  if (x<x1) return y1;
-  if (x>x2) return y2;
-  return y1+(y2-y1)*(x-x1)/(x2-x1);
-}
 
-// Difference between finite top mass dependence @NLO vs @LO evaluated using Powheg NNLOPS
-// taken as uncertainty on the treamtment of top mass in ggF loop
-double qm_t(double pT) {
-  return interpol(pT,160,0.0,500,0.37);
-}
 
-// migration uncertaitny around the 120 GeV boundary
-double pT120(double pT, int Njets30) {
-  if (Njets30==0) return 0;
-  return interpol(pT,90,-0.016,160,0.14);
-}
+
+
 
 // migration uncertaitny around the 60 GeV boundary
 double pT60(double pT, int Njets30) {
@@ -99,14 +171,6 @@ double pT60(double pT, int Njets30) {
 }
 
 
-NumV jetBinUnc(int Njets30, int STXS) {
-  NumV result = blptw(Njets30);
-  result.push_back(vbf_2j(STXS));
-  result.push_back(vbf_3j(STXS));
-  // set jet bin uncertainties to zero if we are in the VBF phase-space
-  if (result.back()!=0.0) result[0]=result[1]=result[2]=result[3]=0.0;
-  return result;
-}
 
 NumV qcd_ggF_uncert_wg1(int Njets30, double pT, int STXS) {
   NumV result = jetBinUnc(Njets30,STXS);
@@ -148,14 +212,6 @@ NumV qcd_ggF_uncert_stxs(int Njets30, double pT, int STXS) {
   result.push_back(dsig60);
   result.push_back(dsig120);
   result.push_back(dsig200);
-  return result;
-}
-
-NumV qcd_ggF_uncert_2017(int Njets30, double pT, int STXS) {
-  NumV result = jetBinUnc(Njets30,STXS);
-  result.push_back(pT60(pT,Njets30));
-  result.push_back(pT120(pT,Njets30));
-  result.push_back(qm_t(pT));
   return result;
 }
 
