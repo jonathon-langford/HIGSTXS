@@ -160,6 +160,18 @@ NumV ptInclusive(int STXS) {
 
 
 
+NumV pt0j(int STXS) {
+  // pth 0 jet:                         10                 --->   1 nuisance
+  
+  // < 10
+  if (STXS == 105 ) return {1.00};
+  // > 10
+  if (STXS == 106 ) return {1.00};
+}
+
+
+
+
 
 
 
