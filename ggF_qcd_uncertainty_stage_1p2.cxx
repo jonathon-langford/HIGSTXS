@@ -1,3 +1,7 @@
+//
+//
+//
+
 typedef std::vector<double> NumV;
 
 //
@@ -22,6 +26,10 @@ typedef std::vector<double> NumV;
 // NB: the only input from YR4 and higher order calculation is about jet binning
 //     All the rest is coming from scale variations
 //
+//
+
+//
+// Stage 1.0 was here: https://indico.cern.ch/event/618048/attachments/1430472/2204126/ggF_qcd_uncertainty_2017.cxx
 //
 
 
@@ -69,11 +77,15 @@ typedef std::vector<double> NumV;
 //
 // NB: to be updated ??? FIXME
 //
-static double g_sig0=30.117, g_sig1=12.928, g_sig_ge2=5.475,
-g_sig_ge1 = g_sig1+g_sig_ge2, g_sig_tot=g_sig0+g_sig_ge1, g_sig_vbfTopo = 0.630,
-g_sig_ge2noVBF=g_sig_ge2-g_sig_vbfTopo, g_sig_ge1noVBF=g_sig_ge1-g_sig_vbfTopo;
+static double g_sig0=30.117, g_sig1=12.928, g_sig_ge2=5.475, g_sig_ge1 = g_sig1+g_sig_ge2, g_sig_tot=g_sig0+g_sig_ge1, g_sig_vbfTopo = 0.630, g_sig_ge2noVBF=g_sig_ge2-g_sig_vbfTopo, g_sig_ge1noVBF=g_sig_ge1-g_sig_vbfTopo;
 
 
+//
+// from 10% to 1.10
+//
+NumV qcd_ggF_uncertSF_stage_1p2(int STXS) {
+  return unc2sf(qcd_ggF_uncert_stage_1p2(STXS));
+}
 
 
 NumV qcd_ggF_uncert_stage_1p2(int STXS) { // 17 nuisances
@@ -101,6 +113,22 @@ NumV qcd_ggF_uncert_stage_1p2(int STXS) { // 17 nuisances
 }
 
 
+
+// Gaussian uncertainty propagation
+// event weight = 1.0 + % uncertainty
+//
+// e.g.   10% -> 1.10
+//
+
+NumV unc2sf(const NumV &unc) {
+  NumV sfs; 
+  for (auto u:unc) sfs.push_back(1.0+u);
+  return sfs;
+}
+
+
+
+
 NumV jetBinUnc(int STXS) {
   int Njets30;
   
@@ -118,6 +146,9 @@ NumV jetBinUnc(int STXS) {
 
 //
 // Jet bin uncertainties 
+//
+// e.g. 1%, 20%, ...
+//
 NumV blptw(int Njets30) {
   
   static std::vector<double> sig({g_sig0,g_sig1,g_sig_ge2noVBF}); // NNLOPS subtracting VBF
@@ -125,7 +156,7 @@ NumV blptw(int Njets30) {
   // BLPTW absolute uncertainties in pb
   static vector<double> yieldUnc({ 1.12, 0.66, 0.42});
   static vector<double> resUnc  ({ 0.03, 0.57, 0.42});
-  static vector<double> cut01Unc({-1.22, 1.00, 0.21});
+  static vector<double> cut01Unc({-1.22, 0.00, 0.21});
   static vector<double> cut12Unc({    0,-0.86, 0.86});
   
   // account for missing EW+quark mass effects by scaling BLPTW total cross section to sigma(N3LO)
@@ -142,142 +173,171 @@ NumV blptw(int Njets30) {
 }
 
 
+//      GG2H_PTH_200_300 = 101,
+//      GG2H_PTH_300_450 = 102,
+//      GG2H_PTH_450_650 = 103,
+//      GG2H_PTH_GT650 = 104,
+//      GG2H_0J_PTH_0_10   = 105,
+//      GG2H_0J_PTH_GT10   = 106,
+//      GG2H_1J_PTH_0_60 = 107,
+//      GG2H_1J_PTH_60_120 = 108,
+//      GG2H_1J_PTH_120_200 = 109,
+//      GG2H_GE2J_MJJ_0_350_PTH_0_60 = 110,
+//      GG2H_GE2J_MJJ_0_350_PTH_60_120 = 111,
+//      GG2H_GE2J_MJJ_0_350_PTH_120_200 = 112,
+//      GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_0_25 = 113,
+//      GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_GT25 = 114,
+//      GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_0_25 = 115,
+//      GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_GT25 = 116,
+//
+
 NumV ptInclusive(int STXS) {
   // ptH inclusive:                     200, 300, 450, 650 --->   4 nuisances
   
   // < 200 GeV
-  if (STXS >= 105 && STXS <= 116) return {1.00, 1.00, 1.00, 1.00};
+  if (STXS >= 105 && STXS <= 116) return {0.00, 0.00, 0.00, 0.00};
   // > 200 GeV
-  if (STXS >= 101 && STXS <= 104) {
-    if (STXS == 101)  return {1.00, 1.00, 1.00, 1.00};
-    if (STXS == 102)  return {1.00, 1.00, 1.00, 1.00};
-    if (STXS == 103)  return {1.00, 1.00, 1.00, 1.00};
-    if (STXS == 104)  return {1.00, 1.00, 1.00, 1.00};
+  else if (STXS >= 101 && STXS <= 104) {
+    if (STXS == 101)  return {0.00, 0.00, 0.00, 0.00};
+    if (STXS == 102)  return {0.00, 0.00, 0.00, 0.00};
+    if (STXS == 103)  return {0.00, 0.00, 0.00, 0.00};
+    if (STXS == 104)  return {0.00, 0.00, 0.00, 0.00};
+  }
+  else { // nuisance = 0
+    return {0.00, 0.00, 0.00, 0.00};
   }
   
 }
 
 
 
+//      GG2H_0J_PTH_0_10   = 105,
+//      GG2H_0J_PTH_GT10   = 106,
 
 NumV pt0j(int STXS) {
   // pth 0 jet:                         10                 --->   1 nuisance
   
   // < 10
-  if (STXS == 105 ) return {1.00};
+  if (STXS == 105 ) return {0.00};
   // > 10
-  if (STXS == 106 ) return {1.00};
-}
-
-
-
-
-
-
-
-// migration uncertaitny around the 60 GeV boundary
-double pT60(double pT, int Njets30) {
-  if (Njets30==0) return 0;
-  if (Njets30==1) return interpol(pT,20,-0.1,100,0.1);
-  return interpol(pT,0,-0.1,180,0.10); // >=2 jets
-}
-
-
-
-NumV qcd_ggF_uncert_wg1(int Njets30, double pT, int STXS) {
-  NumV result = jetBinUnc(Njets30,STXS);
-  
-  // High pT uncertainty 
-  static double y1_1 = -0.12, y2_1 = 0.16, x2_1 = 150;
-  static double y1_ge2 = -0.12, y2_ge2 = 0.16, x2_ge2 = 225;
-  double pTH_unc = 0.0;
-  if      (Njets30==1) pTH_unc = interpol(pT,0,y1_1,x2_1,y2_1);
-  else if (Njets30>=2) pTH_unc = interpol(pT,0,y1_ge2,x2_ge2,y2_ge2);
-  result.push_back(pTH_unc);
-  
-  // finite top mass uncertainty
-  result.push_back(qm_t(pT));
-  
-  return result;
-}
-
-NumV qcd_ggF_uncert_stxs(int Njets30, double pT, int STXS) {
-  NumV result = jetBinUnc(Njets30,STXS);
-  // Dsig60, Dsig120 and Dsig200 are extracted from Powheg NNLOPS
-  // scale variations (envelope of 26 variations)
-  //   sig(60,200)  = 9.095 +/- 1.445 pb, BLPTW 10.9%
-  //   sig(120,200) = 1.961 +/- 0.401 pb, BLPTW 13.1%
-  //   sig(200,inf) = 0.582 +/- 0.121 pb, BLPTW 15.1%
-  static double sig0_60=8.719, sig60_200=9.095, sig120_200=1.961, 
-  sig0_120=sig0_60+sig60_200-sig120_200, sig200_plus=0.582; // 0.121 (-) 0.151*0.582
-  static double Dsig60_200=1.055, Dsig120_200=0.206, Dsig200_plus=0.0832; // with 2M evts, and subtraction
-  double dsig60=0, dsig120=0, dsig200=0;
-  if (Njets30>=1) {
-    if      (pT<60)  dsig60=-Dsig60_200/sig0_60;  // -17.2%
-    else if (pT<200) dsig60=Dsig60_200/sig60_200; // +16.0%
-    
-    if      (pT<120) dsig120 = -Dsig120_200/sig0_120;   //  -2.6%
-    else if (pT<200) dsig120 =  Dsig120_200/sig120_200; // +20.8%
-    
-    if (pT>200) dsig200=Dsig200_plus/sig200_plus; // +14.3%
+  else if (STXS == 106 ) return {0.00};
+  //
+  else { // nuisance = 0
+    return {0.00};
   }
-  result.push_back(dsig60);
-  result.push_back(dsig120);
-  result.push_back(dsig200);
-  return result;
 }
 
-NumV qcd_ggF_uncert_jve(int Njets30, double pT, int STXS) {
-  NumV result;
-  // Central values for eps0 and eps1 from Powheg NNLOPS
-  //   eps0 = 0.617 +- 0.012 <= from Fabrizio and Pier
-  //   eps1 = 0.681 +- 0.057 <= from Fabrizio and Pier
-  // and setting inclusive uncertainty to 3.9% (YR4 for N3LO)
-  static double D01=g_sig_tot*0.012, D12=g_sig_ge1*0.057;
+
+
+
+//      GG2H_1J_PTH_0_60 = 107,
+//      GG2H_1J_PTH_60_120 = 108,
+//      GG2H_1J_PTH_120_200 = 109,
+
+NumV pt1j(int STXS) {
+  // pth 1 jet:                         60, 120            --->   2 nuisances
   
-  result.push_back(0.039); // YR4 inclusive cross section (Gaussian)
+  // pt < 60
+  if (STXS == 107 ) return {0.00, 0.00};
+  // 60 < pt < 120
+  else if (STXS == 108 ) return {0.00, 0.00};
+  // 120 < pt < 200
+  else if (STXS == 109 ) return {0.00, 0.00};
+  //
+  else { // nuisance = 0
+    return {0.00, 0.00};
+  } 
+}
+
+
+
+//      GG2H_GE2J_MJJ_0_350_PTH_0_60 = 110,
+//      GG2H_GE2J_MJJ_0_350_PTH_60_120 = 111,
+//      GG2H_GE2J_MJJ_0_350_PTH_120_200 = 112,
+
+NumV pt2j(int STXS) {
+  // pth 2 jet (mjj < 350) :            60, 120            --->   2 nuisances
   
-  // mig 0 -> 1 from eps0. Taking out VBF topology piece
-  double d01 = Njets30==0 ? -D01/g_sig0 : D01/g_sig_ge1noVBF; 
-  result.push_back(d01);
+  // pt < 60
+  if (STXS == 110 ) return {0.00, 0.00};
+  // 60 < pt < 120
+  else if (STXS == 111 ) return {0.00, 0.00};
+  // 120 < pt < 200
+  else if (STXS == 112 ) return {0.00, 0.00};
+  //
+  else { // nuisance = 0
+    return {0.00, 0.00};
+  } 
+}
+
+
+
+
+
+
+
+//      GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_0_25 = 113,
+//      GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_GT25 = 114,
+
+NumV pthjjlowmjj(int STXS) {
+  // pthhjj 2 jet (350 < mjj < 700) :   25                 --->   1 nuisance (similar to 3rd jet veto)
   
-  double d12 = 0.0;
-  if      (Njets30==1) d12 = -D12/g_sig1;
-  else if (Njets30>=2) d12 =  D12/g_sig_ge2noVBF;
-  result.push_back(d12);
+  // pthjj < 25
+  if (STXS == 113 ) return {0.00};
+  // pthjj > 25
+  else if (STXS == 114 ) return {0.00};
+  //
+  else { // nuisance = 0
+    return {0.00};
+  } 
+}
+
+
+
+
+
+//      GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_0_25 = 115,
+//      GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_GT25 = 116,
+
+NumV pthjjhighmjj(int STXS) {
+  // pthhjj 2 jet (mjj > 700)       :   25                 --->   1 nuisance (similar to 3rd jet veto) 
   
-  // VBF-topology
-  result.push_back(vbf_2j(STXS));
-  result.push_back(vbf_3j(STXS));
-  // set jet bin uncertainties to zero if we are in the VBF phase-space
-  if (result.back()!=0.0) result[0]=result[1]=result[2]=0.0;
+  // pthjj < 25
+  if (STXS == 115 ) return {0.00};
+  // pthjj > 25
+  else if (STXS == 116 ) return {0.00};
+  //
+  else { // nuisance = 0
+    return {0.00};
+  } 
+}
+
+
+
+//      GG2H_GE2J_MJJ_0_350_PTH_0_60 = 110,
+//      GG2H_GE2J_MJJ_0_350_PTH_60_120 = 111,
+//      GG2H_GE2J_MJJ_0_350_PTH_120_200 = 112,
+//      GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_0_25 = 113,
+//      GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_GT25 = 114,
+//      GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_0_25 = 115,
+//      GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_GT25 = 116,
+
+NumV mjj(int STXS) {
+  // mjj :      350    700                                 --->   2 nuisances
   
-  // pTH uncertainties from 2017 scheme
-  result.push_back(pT60(pT,Njets30));
-  result.push_back(pT120(pT,Njets30));
-  result.push_back(qm_t(pT));
-  return result;
+  // mjj < 350
+  if (STXS == 110 || STXS == 112 || STXS == 113) return {0.00, 0.00};
+  // 350 < mjj < 700
+  else if (STXS == 113 || STXS == 114) return {0.00, 0.00};
+  // mjj > 700
+  else if (STXS == 115 || STXS == 116) return {0.00, 0.00};
+  //
+  else { // nuisance = 0
+    return {0.00, 0.00};
+  } 
 }
 
 
-// Gaussian uncertainty propagation
-// event weihgt = 1.0 + 1-stdDev-fractional-uncertainty-amplitudie * NumberOfStdDev
-NumV unc2sf(const NumV &unc, double Nsigma) {
-  NumV sfs; for (auto u:unc) sfs.push_back(1.0+Nsigma*u); return sfs;
-}
 
-NumV qcd_ggF_uncertSF_wg1(int Njets30, double pT, int STXS_Stage1, double Nsigma) {
-  return unc2sf(qcd_ggF_uncert_wg1(Njets30,pT,STXS_Stage1),Nsigma);
-}
 
-NumV qcd_ggF_uncertSF_stxs(int Njets30, double pT, int STXS_Stage1, double Nsigma) {
-  return unc2sf(qcd_ggF_uncert_stxs(Njets30,pT,STXS_Stage1),Nsigma);
-}
 
-NumV qcd_ggF_uncertSF_2017(int Njets30, double pT, int STXS_Stage1, double Nsigma) {
-  return unc2sf(qcd_ggF_uncert_2017(Njets30,pT,STXS_Stage1),Nsigma);
-}
-
-NumV qcd_ggF_uncertSF_jve(int Njets30, double pT, int STXS_Stage1, double Nsigma) {
-  return unc2sf(qcd_ggF_uncert_jve(Njets30,pT,STXS_Stage1),Nsigma);
-}
