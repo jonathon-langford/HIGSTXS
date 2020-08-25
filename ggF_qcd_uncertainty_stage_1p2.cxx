@@ -195,13 +195,13 @@ NumV ptInclusive(int STXS) {
   // ptH inclusive:                     200, 300, 450, 650 --->   4 nuisances
   
   // < 200 GeV
-  if (STXS >= 105 && STXS <= 116) return {0.00, 0.00, 0.00, 0.00};
+  if (STXS >= 105 && STXS <= 116) return {0.001464, 0.000339, -0.000055, 0.000006};
   // > 200 GeV
   else if (STXS >= 101 && STXS <= 104) {
-    if (STXS == 101)  return {0.00, 0.00, 0.00, 0.00};
-    if (STXS == 102)  return {0.00, 0.00, 0.00, 0.00};
-    if (STXS == 103)  return {0.00, 0.00, 0.00, 0.00};
-    if (STXS == 104)  return {0.00, 0.00, 0.00, 0.00};
+    if (STXS == 101)  return {-0.104389, 0.000339, -0.000055, 0.000006};
+    if (STXS == 102)  return {-0.104389, -0.108575, -0.000055, 0.000006};
+    if (STXS == 103)  return {-0.104389, -0.108575, 0.134667, 0.000006};
+    if (STXS == 104)  return {-0.104389, -0.108575, 0.134667, -0.111486};
   }
   else { // nuisance = 0
     return {0.00, 0.00, 0.00, 0.00};
@@ -218,9 +218,9 @@ NumV pt0j(int STXS) {
   // pth 0 jet:                         10                 --->   1 nuisance
   
   // < 10
-  if (STXS == 105 ) return {0.00};
+  if (STXS == 105 ) return {0.009014};
   // > 10
-  else if (STXS == 106 ) return {0.00};
+  else if (STXS == 106 ) return {-0.003173};
   //
   else { // nuisance = 0
     return {0.00};
@@ -238,11 +238,11 @@ NumV pt1j(int STXS) {
   // pth 1 jet:                         60, 120            --->   2 nuisances
   
   // pt < 60
-  if (STXS == 107 ) return {0.00, 0.00};
+  if (STXS == 107 ) return {-0.015619, -0.002023};
   // 60 < pt < 120
-  else if (STXS == 108 ) return {0.00, 0.00};
+  else if (STXS == 108 ) return {0.019142, -0.002023};
   // 120 < pt < 200
-  else if (STXS == 109 ) return {0.00, 0.00};
+  else if (STXS == 109 ) return {0.019142, 0.027780};
   //
   else { // nuisance = 0
     return {0.00, 0.00};
@@ -259,11 +259,11 @@ NumV pt2j(int STXS) {
   // pth 2 jet (mjj < 350) :            60, 120            --->   2 nuisances
   
   // pt < 60
-  if (STXS == 110 ) return {0.00, 0.00};
+  if (STXS == 110 ) return {0.007897, -0.004152};
   // 60 < pt < 120
-  else if (STXS == 111 ) return {0.00, 0.00};
+  else if (STXS == 111 ) return {-0.003375, -0.004152};
   // 120 < pt < 200
-  else if (STXS == 112 ) return {0.00, 0.00};
+  else if (STXS == 112 ) return {-0.003375, 0.014685};
   //
   else { // nuisance = 0
     return {0.00, 0.00};
@@ -283,9 +283,9 @@ NumV pthjjlowmjj(int STXS) {
   // pthhjj 2 jet (350 < mjj < 700) :   25                 --->   1 nuisance (similar to 3rd jet veto)
   
   // pthjj < 25
-  if (STXS == 113 ) return {0.00};
+  if (STXS == 113 ) return {0.007990};
   // pthjj > 25
-  else if (STXS == 114 ) return {0.00};
+  else if (STXS == 114 ) return {-0.006538};
   //
   else { // nuisance = 0
     return {0.00};
@@ -303,9 +303,9 @@ NumV pthjjhighmjj(int STXS) {
   // pthhjj 2 jet (mjj > 700)       :   25                 --->   1 nuisance (similar to 3rd jet veto) 
   
   // pthjj < 25
-  if (STXS == 115 ) return {0.00};
+  if (STXS == 115 ) return {0.037295};
   // pthjj > 25
-  else if (STXS == 116 ) return {0.00};
+  else if (STXS == 116 ) return {-0.033190};
   //
   else { // nuisance = 0
     return {0.00};
@@ -326,11 +326,11 @@ NumV mjj(int STXS) {
   // mjj :      350    700                                 --->   2 nuisances
   
   // mjj < 350
-  if (STXS == 110 || STXS == 112 || STXS == 113) return {0.00, 0.00};
+  if (STXS == 110 || STXS == 112 || STXS == 113) return {-0.006154, -0.002746};
   // 350 < mjj < 700
-  else if (STXS == 113 || STXS == 114) return {0.00, 0.00};
+  else if (STXS == 113 || STXS == 114) return {0.026153, -0.002746};
   // mjj > 700
-  else if (STXS == 115 || STXS == 116) return {0.00, 0.00};
+  else if (STXS == 115 || STXS == 116) return {0.026153, 0.045133};
   //
   else { // nuisance = 0
     return {0.00, 0.00};
