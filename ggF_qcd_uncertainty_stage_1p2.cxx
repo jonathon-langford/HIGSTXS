@@ -24,7 +24,7 @@ typedef std::vector<double> NumV;
 
 //
 // NB: the only input from YR4 and higher order calculation is about jet binning
-//     All the rest is coming from scale variations
+//     All the rest coming from scale variations using MINLO HJ sample with NNLOPS reweighting
 //
 //
 
@@ -132,14 +132,16 @@ NumV unc2sf(const NumV &unc) {
 NumV jetBinUnc(int STXS) {
   int Njets30;
   
+  // pTH > 200 inclusive in njet, return inclusive norm and resummation unc (0 for njet migrations)
+  if (STXS >= 101 && STXS <= 104) return {0.0453,0.0209,0,0}
+  
   if (STXS == 105 || STXS == 106)                Njets30 = 0;
   if (STXS == 107 || STXS == 108 || STXS == 109) Njets30 = 1;
   if (STXS >= 110 && STXS <= 116)                Njets30 = 2;
   
   NumV result = blptw(Njets30);
   
-  // set jet bin uncertainties to zero if we are in the VBF phase-space  ----> why???? FIXME
-//   if (result.back()!=0.0) result[0]=result[1]=result[2]=result[3]=0.0;
+  // FIXME: VBF region currently given GE2J unc. Is this valid? Previously set to 0?
   return result;
 }
 
@@ -156,7 +158,7 @@ NumV blptw(int Njets30) {
   // BLPTW absolute uncertainties in pb
   static vector<double> yieldUnc({ 1.12, 0.66, 0.42});
   static vector<double> resUnc  ({ 0.03, 0.57, 0.42});
-  static vector<double> cut01Unc({-1.22, 0.00, 0.21});
+  static vector<double> cut01Unc({-1.22, 1.00, 0.21});
   static vector<double> cut12Unc({    0,-0.86, 0.86});
   
   // account for missing EW+quark mass effects by scaling BLPTW total cross section to sigma(N3LO)
@@ -195,13 +197,13 @@ NumV ptInclusive(int STXS) {
   // ptH inclusive:                     200, 300, 450, 650 --->   4 nuisances
   
   // < 200 GeV
-  if (STXS >= 105 && STXS <= 116) return {-0.002615, -0.000654, -0.000108, -0.000020};
+  if (STXS >= 105 && STXS <= 116) return {-0.002408, 0.0, 0.0, 0.0};
   // > 200 GeV
   else if (STXS >= 101 && STXS <= 104) {
-    if (STXS == 101)  return {0.217323, -0.000654, -0.000108, -0.000020};
-    if (STXS == 102)  return {0.217323, 0.267997, -0.000108, -0.000020};
-    if (STXS == 103)  return {0.217323, 0.267997, 0.314666, -0.000020};
-    if (STXS == 104)  return {0.217323, 0.267997, 0.314666, 0.352589};
+    if (STXS == 101)  return {0.193581, -0.002713,  0.000000,  0.000000};
+    if (STXS == 102)  return {0.193581,  0.010221, -0.001005,  0.000000};
+    if (STXS == 103)  return {0.193581,  0.010221,  0.005824, -0.000385};
+    if (STXS == 104)  return {0.193581,  0.010221,  0.005824,  0.002701};
   }
   else { // nuisance = 0
     return {0.00, 0.00, 0.00, 0.00};
@@ -218,9 +220,9 @@ NumV pt0j(int STXS) {
   // pth 0 jet:                         10                 --->   1 nuisance
   
   // < 10
-  if (STXS == 105 ) return {-0.004680};
+  if (STXS == 105 ) return {-0.103177};
   // > 10
-  else if (STXS == 106 ) return {0.001478};
+  else if (STXS == 106 ) return {0.032871};
   //
   else { // nuisance = 0
     return {0.00};
@@ -238,11 +240,11 @@ NumV pt1j(int STXS) {
   // pth 1 jet:                         60, 120            --->   2 nuisances
   
   // pt < 60
-  if (STXS == 107 ) return {-0.024935, -0.007453};
+  if (STXS == 107 ) return {-0.031176, -0.008705};
   // 60 < pt < 120
-  else if (STXS == 108 ) return {0.033401, -0.007453};
+  else if (STXS == 108 ) return {0.042038, -0.008705};
   // 120 < pt < 200
-  else if (STXS == 109 ) return {0.033401, 0.110305};
+  else if (STXS == 109 ) return {0.042038, 0.140754};
   //
   else { // nuisance = 0
     return {0.00, 0.00};
@@ -259,11 +261,11 @@ NumV pt2j(int STXS) {
   // pth 2 jet (mjj < 350) :            60, 120            --->   2 nuisances
   
   // pt < 60
-  if (STXS == 110 ) return {-0.042342, -0.018749};
+  if (STXS == 110 ) return {-0.051793, -0.017905};
   // 60 < pt < 120
-  else if (STXS == 111 ) return {0.020519, -0.018749};
+  else if (STXS == 111 ) return {0.023678, -0.017905};
   // 120 < pt < 200
-  else if (STXS == 112 ) return {0.020519, 0.066592};
+  else if (STXS == 112 ) return {0.023678, 0.061627};
   //
   else { // nuisance = 0
     return {0.00, 0.00};
@@ -283,9 +285,9 @@ NumV pthjjlowmjj(int STXS) {
   // pthhjj 2 jet (350 < mjj < 700) :   25                 --->   1 nuisance (similar to 3rd jet veto)
   
   // pthjj < 25
-  if (STXS == 113 ) return {-0.009415};
+  if (STXS == 113 ) return {-0.015516};
   // pthjj > 25
-  else if (STXS == 114 ) return {0.008343};
+  else if (STXS == 114 ) return {0.010452};
   //
   else { // nuisance = 0
     return {0.00};
@@ -303,9 +305,9 @@ NumV pthjjhighmjj(int STXS) {
   // pthhjj 2 jet (mjj > 700)       :   25                 --->   1 nuisance (similar to 3rd jet veto) 
   
   // pthjj < 25
-  if (STXS == 115 ) return {-0.009150};
+  if (STXS == 115 ) return {-0.014963};
   // pthjj > 25
-  else if (STXS == 116 ) return {0.008938};
+  else if (STXS == 116 ) return {0.009898};
   //
   else { // nuisance = 0
     return {0.00};
@@ -326,11 +328,11 @@ NumV mjj(int STXS) {
   // mjj :      350    700                                 --->   2 nuisances
   
   // mjj < 350
-  if (STXS == 110 || STXS == 112 || STXS == 113) return {-0.003745, -0.001010};
+  if (STXS == 110 || STXS == 112 || STXS == 113) return {-0.005716, -0.001748};
   // 350 < mjj < 700
-  else if (STXS == 113 || STXS == 114) return {0.018111, -0.001010};
+  else if (STXS == 113 || STXS == 114) return {0.026375, -0.001748};
   // mjj > 700
-  else if (STXS == 115 || STXS == 116) return {0.018111, 0.018737};
+  else if (STXS == 115 || STXS == 116) return {0.026375, 0.030696};
   //
   else { // nuisance = 0
     return {0.00, 0.00};
