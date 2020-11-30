@@ -31,6 +31,9 @@ typedef std::vector<double> NumV;
 //
 // Stage 1.0 was here: https://indico.cern.ch/event/618048/attachments/1430472/2204126/ggF_qcd_uncertainty_2017.cxx
 //
+//
+// FIXME: require additional nuisance for dashed boundary in mjj < 350 region
+// uncertainty of type (A): enters measurement, include in addition to scale variations within bin
 
 
 //
@@ -91,6 +94,8 @@ NumV qcd_ggF_uncertSF_stage_1p2(int STXS) {
 NumV qcd_ggF_uncert_stage_1p2(int STXS) { // 17 nuisances
 
   // Njets :    0/1   1/2   yield   res                    --->   4 nuisances
+  // Boosted:   (for pTH>200)                              --->   1 nuisance 
+  //
   // ptH inclusive:                     200, 300, 450, 650 --->   4 nuisances
   // pth 0 jet:                         10                 --->   1 nuisance
   // pth 1 jet:                         60, 120            --->   2 nuisances
@@ -100,6 +105,7 @@ NumV qcd_ggF_uncert_stage_1p2(int STXS) { // 17 nuisances
   // mjj :      350    700                                 --->   2 nuisances
   
   NumV result = jetBinUnc(STXS);
+  result.push_back (boostedUnc(STXS));
   result.push_back (ptInclusive(STXS));
   result.push_back (pt0j(STXS));
   result.push_back (pt1j(STXS));
@@ -132,8 +138,8 @@ NumV unc2sf(const NumV &unc) {
 NumV jetBinUnc(int STXS) {
   int Njets30;
   
-  // pTH > 200 inclusive in njet, return inclusive norm and resummation unc (0 for njet migrations)
-  if (STXS >= 101 && STXS <= 104) return {0.0453,0.0209,0,0}
+  // pTH > 200 inclusive in njet, use inclusive numbers from BLPTW scheme (nJet migrations = 0)
+  if (STXS >= 101 && STXS <= 104) return {0.046,0.020,0,0}
   
   if (STXS == 105 || STXS == 106)                Njets30 = 0;
   if (STXS == 107 || STXS == 108 || STXS == 109) Njets30 = 1;
@@ -174,7 +180,17 @@ NumV blptw(int Njets30) {
   };
 }
 
+// Additional yield nuisance for high pTH region from boosted ggH note: arXiv:2005.07762
+// flat ~15% uncertainty for pTH > 200
+// assumes uncertainty for pTH > 200 ~ pTH > 400
+NumV boostedUnc(int STXS) {
+    if (STXS >= 101 && STXS <= 104) return {0.150};
+    else{ // nuisance = 0
+      return {0.00};
+    }
+}
 
+// Migration uncertainties
 //      GG2H_PTH_200_300 = 101,
 //      GG2H_PTH_300_450 = 102,
 //      GG2H_PTH_450_650 = 103,
@@ -212,7 +228,6 @@ NumV ptInclusive(int STXS) {
 }
 
 
-
 //      GG2H_0J_PTH_0_10   = 105,
 //      GG2H_0J_PTH_GT10   = 106,
 
@@ -240,17 +255,16 @@ NumV pt1j(int STXS) {
   // pth 1 jet:                         60, 120            --->   2 nuisances
   
   // pt < 60
-  if (STXS == 107 ) return {-0.031176, -0.008705};
+  if (STXS == 107 ) return {-0.031176, 0.0};
   // 60 < pt < 120
-  else if (STXS == 108 ) return {0.042038, -0.008705};
+  else if (STXS == 108 ) return {0.042038, -0.015090};
   // 120 < pt < 200
-  else if (STXS == 109 ) return {0.042038, 0.140754};
+  else if (STXS == 109 ) return {0.042038, 0.095236};
   //
   else { // nuisance = 0
     return {0.00, 0.00};
   } 
 }
-
 
 
 //      GG2H_GE2J_MJJ_0_350_PTH_0_60 = 110,
@@ -261,11 +275,11 @@ NumV pt2j(int STXS) {
   // pth 2 jet (mjj < 350) :            60, 120            --->   2 nuisances
   
   // pt < 60
-  if (STXS == 110 ) return {-0.051793, -0.017905};
+  if (STXS == 110 ) return {-0.051793, 0.0};
   // 60 < pt < 120
-  else if (STXS == 111 ) return {0.023678, -0.017905};
+  else if (STXS == 111 ) return {0.023678, -0.021774};
   // 120 < pt < 200
-  else if (STXS == 112 ) return {0.023678, 0.061627};
+  else if (STXS == 112 ) return {0.023678, 0.044599};
   //
   else { // nuisance = 0
     return {0.00, 0.00};
@@ -273,47 +287,43 @@ NumV pt2j(int STXS) {
 }
 
 
-
-
-
-
-
 //      GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_0_25 = 113,
 //      GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_GT25 = 114,
 
 NumV pthjjlowmjj(int STXS) {
   // pthhjj 2 jet (350 < mjj < 700) :   25                 --->   1 nuisance (similar to 3rd jet veto)
+  // Standard scale variations for MINLO HJ under-estimate this uncertainty
+  // For now recycle the njet=2/3 migration from stage 1.0 scheme
+  // +20% for pTHjj > 25 GeV, -X% for pTHjj < 25 GeV, where sum of bins remains constant
   
   // pthjj < 25
-  if (STXS == 113 ) return {-0.015516};
+  if (STXS == 113 ) return {-0.313007};
   // pthjj > 25
-  else if (STXS == 114 ) return {0.010452};
+  else if (STXS == 114 ) return {0.200};
   //
   else { // nuisance = 0
     return {0.00};
   } 
 }
-
-
-
-
 
 //      GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_0_25 = 115,
 //      GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_GT25 = 116,
 
 NumV pthjjhighmjj(int STXS) {
   // pthhjj 2 jet (mjj > 700)       :   25                 --->   1 nuisance (similar to 3rd jet veto) 
+  // Standard scale variations for MINLO HJ under-estimate this uncertainty
+  // For now recycle the njet=2/3 migration from stage 1.0 scheme
+  // +20% for pTHjj > 25 GeV, -X% for pTHjj < 25 GeV, where sum of bins remains constant
   
   // pthjj < 25
-  if (STXS == 115 ) return {-0.014963};
+  if (STXS == 115 ) return {-0.321294};
   // pthjj > 25
-  else if (STXS == 116 ) return {0.009898};
+  else if (STXS == 116 ) return {0.200};
   //
   else { // nuisance = 0
     return {0.00};
   } 
 }
-
 
 
 //      GG2H_GE2J_MJJ_0_350_PTH_0_60 = 110,
@@ -328,11 +338,11 @@ NumV mjj(int STXS) {
   // mjj :      350    700                                 --->   2 nuisances
   
   // mjj < 350
-  if (STXS == 110 || STXS == 112 || STXS == 113) return {-0.005716, -0.001748};
+  if (STXS == 110 || STXS == 112 || STXS == 113) return {-0.005716, 0.0};
   // 350 < mjj < 700
-  else if (STXS == 113 || STXS == 114) return {0.026375, -0.001748};
+  else if (STXS == 113 || STXS == 114) return {0.026375, -0.002980};
   // mjj > 700
-  else if (STXS == 115 || STXS == 116) return {0.026375, 0.030696};
+  else if (STXS == 115 || STXS == 116) return {0.026375, 0.006871};
   //
   else { // nuisance = 0
     return {0.00, 0.00};
